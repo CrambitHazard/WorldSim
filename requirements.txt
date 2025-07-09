@@ -1,0 +1,7 @@
+# Text RPG Game Dependencies
+# Core Python modules used (all standard library)
+# No external dependencies required
+
+# Optional: For enhanced terminal experience
+# colorama>=0.4.6  # Uncomment if you want colored output
+# rich>=13.0.0     # Uncomment for rich terminal formatting
