@@ -11,6 +11,10 @@ from narrative import generate_quest, generate_location_description
 from simulation import WorldSimulation
 from items import generate_random_item
 from game_state import GameState
+from crafting import CraftingSystem
+from housing import HousingSystem
+from companions import CompanionSystem
+from achievements import AchievementSystem, track_player_stats
 
 root = tk.Tk()
 root.withdraw()
@@ -104,6 +108,13 @@ def character_mode():
     
     # Character creation
     player = create_character()
+    
+    # Initialize new systems
+    player.crafting_system = CraftingSystem()
+    player.housing_system = HousingSystem()
+    player.companion_system = CompanionSystem()
+    player.achievement_system = AchievementSystem()
+    
     global game_state
     game_state = GameState(player=player, world=None)
     game_loop(player)
@@ -164,10 +175,14 @@ def game_loop(player):
         print("4. Character Sheet")
         print("5. Quests")
         print("6. Travel")
-        print("7. Save Game")
-        print("8. Return to Main Menu")
+        print("7. Crafting")
+        print("8. Housing")
+        print("9. Companions")
+        print("10. Achievements")
+        print("11. Save Game")
+        print("12. Return to Main Menu")
         
-        choice = input("\nEnter your choice (1-8): ")
+        choice = input("\nEnter your choice (1-12): ")
         if choice == "1":
             explore(player)
         elif choice == "2":
@@ -184,10 +199,18 @@ def game_loop(player):
                 current_location = new_location
                 player.change_location(new_location)
         elif choice == "7":
+            player.crafting_system.show_crafting_menu(player)
+        elif choice == "8":
+            player.housing_system.show_housing_menu(player)
+        elif choice == "9":
+            player.companion_system.show_companion_menu(player)
+        elif choice == "10":
+            player.achievement_system.show_achievements_menu(player)
+        elif choice == "11":
             result = save_game(player)
             print(result)
             input("\nPress Enter to continue...")
-        elif choice == "8":
+        elif choice == "12":
             if confirm_action("Are you sure you want to return to the main menu? Unsaved progress will be lost."):
                 quit_game = True
         else:
@@ -542,6 +565,34 @@ def about_screen():
     print("and an open-world simulation mode.")
     print("\nCreated with passion by your friendly neighborhood developer.")
     input("\nPress Enter to return to the main menu...")
+
+def show_crafting_menu(player):
+    """Show the crafting menu."""
+    if hasattr(player, 'crafting_system'):
+        player.crafting_system.show_crafting_menu(player)
+    else:
+        print("Crafting system not available!")
+
+def show_housing_menu(player):
+    """Show the housing menu."""
+    if hasattr(player, 'housing_system'):
+        player.housing_system.show_housing_menu(player)
+    else:
+        print("Housing system not available!")
+
+def show_companion_menu(player):
+    """Show the companion menu."""
+    if hasattr(player, 'companion_system'):
+        player.companion_system.show_companion_menu(player)
+    else:
+        print("Companion system not available!")
+
+def show_achievements_menu(player):
+    """Show the achievements menu."""
+    if hasattr(player, 'achievement_system'):
+        player.achievement_system.show_achievements_menu(player)
+    else:
+        print("Achievement system not available!")
 
 def confirm_action(prompt):
     """Ask the user to confirm an action."""

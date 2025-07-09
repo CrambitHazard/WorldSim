@@ -596,6 +596,17 @@ def create_character():
     # Create the character
     player = PlayerCharacter(name, race, character_class)
     
+    # Initialize new systems
+    from crafting import CraftingSystem
+    from housing import HousingSystem
+    from companions import CompanionSystem
+    from achievements import AchievementSystem
+    
+    player.crafting_system = CraftingSystem()
+    player.housing_system = HousingSystem()
+    player.companion_system = CompanionSystem()
+    player.achievement_system = AchievementSystem()
+    
     # Display character info
     typewriter_effect(f"\nCharacter created: {player.name} the {player.race} {player.character_class}")
     input("\nPress Enter to continue...")
