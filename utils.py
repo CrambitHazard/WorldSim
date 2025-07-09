@@ -96,3 +96,60 @@ def wrap_text(text, width=80):
         lines.append(' '.join(current_line))
     
     return '\n'.join(lines)
+
+def get_valid_input(prompt, valid_options, allow_empty=False):
+    """Get valid user input from a list of options."""
+    while True:
+        try:
+            user_input = input(prompt).strip()
+            
+            if allow_empty and user_input == "":
+                return None
+                
+            if user_input in valid_options:
+                return user_input
+            else:
+                print(f"Invalid input. Please choose from: {', '.join(valid_options)}")
+        except KeyboardInterrupt:
+            raise
+        except Exception as e:
+            print(f"Input error: {e}")
+
+def get_numeric_input(prompt, min_value=None, max_value=None, allow_empty=False):
+    """Get valid numeric input from user."""
+    while True:
+        try:
+            user_input = input(prompt).strip()
+            
+            if allow_empty and user_input == "":
+                return None
+                
+            value = int(user_input)
+            
+            if min_value is not None and value < min_value:
+                print(f"Value must be at least {min_value}")
+                continue
+                
+            if max_value is not None and value > max_value:
+                print(f"Value must be at most {max_value}")
+                continue
+                
+            return value
+        except ValueError:
+            print("Please enter a valid number.")
+        except KeyboardInterrupt:
+            raise
+        except Exception as e:
+            print(f"Input error: {e}")
+
+def safe_input(prompt, default=""):
+    """Get user input with error handling and default value."""
+    try:
+        user_input = input(prompt).strip()
+        return user_input if user_input else default
+    except KeyboardInterrupt:
+        print("\nInput cancelled.")
+        return default
+    except Exception as e:
+        print(f"Input error: {e}")
+        return default

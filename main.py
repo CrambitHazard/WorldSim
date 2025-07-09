@@ -17,8 +17,10 @@ root.withdraw()
 
 def main_menu():
     """Display the main menu and handle user selection."""
-    clear_screen()
-    title = """
+    while True:
+        try:
+            clear_screen()
+            title = """
   _____                _    _____  _____   _____
  |_   _|              | |  |  __ \\|  __ \\ / ____|
    | |    ___  __  __ | |_ | |__) | |__) | |  __
@@ -27,32 +29,37 @@ def main_menu():
  |_____| \\___| /_/\\_\\  \\__||_|    |_|     \\_____|
                                                   
     """
-    print(title)
-    typewriter_effect("\nWelcome to Text RPG: Character & Simulation Mode!")
-    print("\nMain Menu:")
-    print("1. New Character Mode Game")
-    print("2. New Simulation Mode")
-    print("3. Load Game")
-    print("4. About")
-    print("5. Quit")
-    
-    choice = input("\nEnter your choice (1-5): ")
-    
-    if choice == "1":
-        character_mode()
-    elif choice == "2":
-        simulation_mode()
-    elif choice == "3":
-        load_game_menu()
-    elif choice == "4":
-        about_screen()
-    elif choice == "5":
-        print("\nThank you for playing! Goodbye.")
-        sys.exit(0)
-    else:
-        print("\nInvalid choice. Please try again.")
-        input("\nPress Enter to continue...")
-        main_menu()
+            print(title)
+            typewriter_effect("\nWelcome to Text RPG: Character & Simulation Mode!")
+            print("\nMain Menu:")
+            print("1. New Character Mode Game")
+            print("2. New Simulation Mode")
+            print("3. Load Game")
+            print("4. About")
+            print("5. Quit")
+            
+            choice = input("\nEnter your choice (1-5): ").strip()
+            
+            if choice == "1":
+                character_mode()
+            elif choice == "2":
+                simulation_mode()
+            elif choice == "3":
+                load_game_menu()
+            elif choice == "4":
+                about_screen()
+            elif choice == "5":
+                print("\nThank you for playing! Goodbye.")
+                sys.exit(0)
+            else:
+                print("\nInvalid choice. Please enter a number between 1-5.")
+                input("\nPress Enter to continue...")
+        except KeyboardInterrupt:
+            print("\n\nGame interrupted. Goodbye!")
+            sys.exit(0)
+        except Exception as e:
+            print(f"\nAn error occurred: {e}")
+            input("\nPress Enter to continue...")
 
 def load_game_menu():
     """Display a menu for loading a saved game."""
