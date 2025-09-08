@@ -1,8 +1,16 @@
 # main.py
 import sys
 import random
-import tkinter as tk
-from tkinter import messagebox, filedialog
+
+# Try to import tkinter, but handle gracefully if not available
+try:
+    import tkinter as tk
+    from tkinter import messagebox, filedialog
+    TKINTER_AVAILABLE = True
+except ImportError:
+    TKINTER_AVAILABLE = False
+    print("Warning: tkinter not available. Some GUI features will be disabled.")
+
 from utils import clear_screen, typewriter_effect, save_game, load_game, get_save_files
 from character import PlayerCharacter, create_character
 from npc import NPC
@@ -11,9 +19,17 @@ from narrative import generate_quest, generate_location_description
 from simulation import WorldSimulation
 from items import generate_random_item
 from game_state import GameState
+from crafting import CraftingSystem
+from housing import HousingSystem
+from companions import CompanionSystem
+from achievements import AchievementSystem, track_player_stats
+from magic_system import MagicSystem
+from religion import ReligionSystem
+from reputation import ReputationSystem
 
-root = tk.Tk()
-root.withdraw()
+if TKINTER_AVAILABLE:
+    root = tk.Tk()
+    root.withdraw()
 
 def main_menu():
     """Display the main menu and handle user selection."""
@@ -104,6 +120,16 @@ def character_mode():
     
     # Character creation
     player = create_character()
+    
+    # Initialize new systems
+    player.crafting_system = CraftingSystem()
+    player.housing_system = HousingSystem()
+    player.companion_system = CompanionSystem()
+    player.achievement_system = AchievementSystem()
+    player.magic_system = MagicSystem()
+    player.religion_system = ReligionSystem()
+    player.reputation_system = ReputationSystem()
+    
     global game_state
     game_state = GameState(player=player, world=None)
     game_loop(player)
@@ -164,10 +190,17 @@ def game_loop(player):
         print("4. Character Sheet")
         print("5. Quests")
         print("6. Travel")
-        print("7. Save Game")
-        print("8. Return to Main Menu")
+        print("7. Magic")
+        print("8. Religion")
+        print("9. Reputation")
+        print("10. Crafting")
+        print("11. Housing")
+        print("12. Companions")
+        print("13. Achievements")
+        print("14. Save Game")
+        print("15. Return to Main Menu")
         
-        choice = input("\nEnter your choice (1-8): ")
+        choice = input("\nEnter your choice (1-15): ")
         if choice == "1":
             explore(player)
         elif choice == "2":
@@ -184,10 +217,24 @@ def game_loop(player):
                 current_location = new_location
                 player.change_location(new_location)
         elif choice == "7":
+            show_magic_menu(player)
+        elif choice == "8":
+            show_religion_menu(player)
+        elif choice == "9":
+            show_reputation_menu(player)
+        elif choice == "10":
+            player.crafting_system.show_crafting_menu(player)
+        elif choice == "11":
+            player.housing_system.show_housing_menu(player)
+        elif choice == "12":
+            player.companion_system.show_companion_menu(player)
+        elif choice == "13":
+            player.achievement_system.show_achievements_menu(player)
+        elif choice == "14":
             result = save_game(player)
             print(result)
             input("\nPress Enter to continue...")
-        elif choice == "8":
+        elif choice == "15":
             if confirm_action("Are you sure you want to return to the main menu? Unsaved progress will be lost."):
                 quit_game = True
         else:
@@ -280,13 +327,19 @@ def view_top_stats(world):
             results += f"  {idx+1}. {npc.name}: {value}\n"
         results += "\n"
     
-    # Create a pop-up window to show the results
-    top_window = tk.Toplevel()
-    top_window.title("Top 5 Characters for Each Stat")
-    text_widget = tk.Text(top_window, wrap="word", width=80, height=30)
-    text_widget.pack(fill="both", expand=True)
-    text_widget.insert("end", results)
-    text_widget.configure(state="disabled")
+    if TKINTER_AVAILABLE:
+        # Create a pop-up window to show the results
+        top_window = tk.Toplevel()
+        top_window.title("Top 5 Characters for Each Stat")
+        text_widget = tk.Text(top_window, wrap="word", width=80, height=30)
+        text_widget.pack(fill="both", expand=True)
+        text_widget.insert("end", results)
+        text_widget.configure(state="disabled")
+    else:
+        # Print results to console if tkinter is not available
+        print("\n=== Top 5 Characters for Each Stat ===")
+        print(results)
+        input("\nPress Enter to continue...")
 
 def explore(player):
     """Handle exploration in the current location."""
@@ -542,6 +595,52 @@ def about_screen():
     print("and an open-world simulation mode.")
     print("\nCreated with passion by your friendly neighborhood developer.")
     input("\nPress Enter to return to the main menu...")
+
+def show_crafting_menu(player):
+    """Show the crafting menu."""
+    if hasattr(player, 'crafting_system'):
+        player.crafting_system.show_crafting_menu(player)
+    else:
+        print("Crafting system not available!")
+
+def show_housing_menu(player):
+    """Show the housing menu."""
+    if hasattr(player, 'housing_system'):
+        player.housing_system.show_housing_menu(player)
+    else:
+        print("Housing system not available!")
+
+def show_companion_menu(player):
+    """Show the companion menu."""
+    if hasattr(player, 'companion_system'):
+        player.companion_system.show_companion_menu(player)
+    else:
+        print("Companion system not available!")
+
+def show_magic_menu(player):
+    """Show the magic menu."""
+    if not hasattr(player, 'magic_system'):
+        player.magic_system = MagicSystem()
+    player.magic_system.show_magic_menu(player)
+
+def show_religion_menu(player):
+    """Show the religion menu."""
+    if not hasattr(player, 'religion_system'):
+        player.religion_system = ReligionSystem()
+    player.religion_system.show_religion_menu(player)
+
+def show_reputation_menu(player):
+    """Show the reputation menu."""
+    if not hasattr(player, 'reputation_system'):
+        player.reputation_system = ReputationSystem()
+    player.reputation_system.show_reputation_menu(player)
+
+def show_achievements_menu(player):
+    """Show the achievements menu."""
+    if hasattr(player, 'achievement_system'):
+        player.achievement_system.show_achievements_menu(player)
+    else:
+        print("Achievement system not available!")
 
 def confirm_action(prompt):
     """Ask the user to confirm an action."""
